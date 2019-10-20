@@ -1,8 +1,10 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using MediatR.Registration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace MediatR.Extensions.Microsoft.DependencyInjection.Tests
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
     using Shouldly;
@@ -45,13 +47,33 @@ namespace MediatR.Extensions.Microsoft.DependencyInjection.Tests
         }
 
         [Fact]
-        public void ShouldRequireAtLeastOneAssembly()
+        public void ShouldNotRequireAtLeastOneAssembly()
         {
             var services = new ServiceCollection();
 
             Action registration = () => services.AddMediatR(new Type[0]);
 
-            registration.ShouldThrow<ArgumentException>();
+            registration.ShouldNotThrow();
+        }
+
+        [Fact]
+        public void ShouldResolveHandlerWithParamsRegistration()
+        {
+            var services = new ServiceCollection();
+            services.AddMediatR();
+            services.AddMediatRClasses(typeof(Ping).GetTypeInfo().Assembly);
+
+            _provider.GetService<IRequestHandler<Ping, Pong>>().ShouldNotBeNull();
+        }
+
+        [Fact]
+        public void ShouldResolveHandlerWithEnumerableRegistration()
+        {
+            var services = new ServiceCollection();
+            services.AddMediatR();
+            services.AddMediatRClasses(new List<Assembly>() { typeof(Ping).GetTypeInfo().Assembly });
+
+            _provider.GetService<IRequestHandler<Ping, Pong>>().ShouldNotBeNull();
         }
     }
 }

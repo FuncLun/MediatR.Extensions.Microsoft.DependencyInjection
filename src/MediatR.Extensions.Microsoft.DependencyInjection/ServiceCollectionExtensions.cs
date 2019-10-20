@@ -20,6 +20,15 @@ namespace MediatR
     public static class ServiceCollectionExtensions
     {
         /// <summary>
+        /// Registers mediator types only. Handlers must be registered separately, possibly with <see cref="AddMediatRClasses(IServiceCollection, Assembly[])"/>.
+        /// </summary>
+        /// <param name="services">Service collection</param>
+        /// <returns>Service collection</returns>
+        public static IServiceCollection AddMediatR(this IServiceCollection services)
+            => services.AddMediatR(new Assembly[0], configuration: null);
+
+
+        /// <summary>
         /// Registers handlers and mediator types from the specified assemblies
         /// </summary>
         /// <param name="services">Service collection</param>
@@ -47,10 +56,6 @@ namespace MediatR
         /// <returns>Service collection</returns>
         public static IServiceCollection AddMediatR(this IServiceCollection services, IEnumerable<Assembly> assemblies, Action<MediatRServiceConfiguration> configuration)
         {
-            if (!assemblies.Any())
-            {
-                throw new ArgumentException("No assemblies found to scan. Supply at least one assembly to scan for handlers.");
-            }
             var serviceConfig = new MediatRServiceConfiguration();
 
             configuration?.Invoke(serviceConfig);

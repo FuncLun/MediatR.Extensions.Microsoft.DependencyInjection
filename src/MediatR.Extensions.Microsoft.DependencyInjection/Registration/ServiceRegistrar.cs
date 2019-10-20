@@ -10,7 +10,11 @@ namespace MediatR.Registration
 {
     public static class ServiceRegistrar
     {
-        public static void AddMediatRClasses(IServiceCollection services, IEnumerable<Assembly> assembliesToScan)
+
+        public static void AddMediatRClasses(this IServiceCollection services, params Assembly[] assembliesToScan)
+            => services.AddMediatRClasses((IEnumerable<Assembly>) assembliesToScan);
+
+        public static void AddMediatRClasses(this IServiceCollection services, IEnumerable<Assembly> assembliesToScan)
         {
             assembliesToScan = (assembliesToScan as Assembly[] ?? assembliesToScan).Distinct().ToArray();
 
